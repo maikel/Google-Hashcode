@@ -103,39 +103,61 @@ int simulate(list<Command> commands, Problem p) {
    return score;
 }
 
+std::stringstream &get_next_line(stringstream &line, istream &in) {
+   if (!in) {
+      cerr << "Some input error occured.\n";
+      exit(-1);
+   }
+   string tmp;
+   getline(in, tmp);
+   line.clear();
+   line.str(tmp);
+   return line;
+}
+
+list<Command> read_commands(istream &in) {
+   list<Command> commands;
+   stringstream line;
+   size_t N;
+   get_next_line(line, in);
+   line >> N;
+   for (int n = 0; n < N; n++) {
+      get_next_line(line, in);
+      Command command;
+      line >> command.drone;
+      line >> command.type;
+      if (command.type == Command::LOAD || command.type == Command::UNLOAD) 
+         line >> command.warehouse;
+      else if (command.type == Command::DELIVER)
+         line >> command.order;
+      if (command.type != Command::WAIT)
+         line >> command.product;
+      line >> command.value;
+      assert(line);
+      commands.push_back(command);
+   }
+   return commands;
+}
+
 }
 }
 }
 
 int main(int argc, char *argv[]) {
    if (argc == 1) {
-      cerr << "Usage: " << argv[0] << " <filename>\n";
-      return 0;
+      cerr << "Usage: " << argv[0] << " <problem file>\n";
+      return -1;
    }
    ifstream input(argv[1]);
    if (!input) {
+      cerr << "Could not open input file '" << argv[1] << "'\n";
       return -1;
    }
    cout << "Reading input file '" << argv[1] << "' ... ";
    hashcode::Problem problem(input);
    cout << "done\n";
    problem.print_parameter(cout);
-
-   list<shared_ptr<hashcode::Strategy>> strats;
-   strats.push_back(static_pointer_cast<hashcode::Strategy>(
-         make_shared<hashcode::SimpleStrategy>(problem)));
-
-   for (auto strategy : strats) {
-      cout << "Generate commands with Strategy '" << strategy->name() << "' ... ";
-      list<hashcode::Command> cmds = strategy->generate_commands();
-      cout << "done. Produced " << cmds.size() << " commands.\n";
-      if (!hashcode::validate(cmds, strategy->problem)) {
-         cerr << "Could not validate the command list of strategy '"
-               << strategy->name() << "'.\n";
-      } else {
-         cout << "Score: " << hashcode::simulate(cmds, strategy->problem) << endl;
-      }
-   }
-
+   list<Command> commands = hashcode::read_commands(cin);
+   cout << "Score: " << hashcode::simulate(commands, problem) << endl;
    return 0;
 }
