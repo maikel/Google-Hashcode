@@ -26,6 +26,10 @@ public:
    int warehouse;
    int product;
    int value;
+ 
+   bool operator==(const Command &command) {
+      return this == &command;
+   }
 };
 
 std::ostream &operator<<(std::ostream &out, const Command &cmd);

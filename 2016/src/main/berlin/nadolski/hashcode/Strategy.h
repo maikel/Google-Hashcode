@@ -11,9 +11,6 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-bool validate(const std::list<Command> &commands, const Problem &problem);
-int simulate(const std::list<Command> &commands, const Problem &problem);
-
 class Strategy {
 public:
    Strategy(const Problem &p);

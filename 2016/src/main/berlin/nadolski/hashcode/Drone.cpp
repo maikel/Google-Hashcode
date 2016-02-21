@@ -4,7 +4,9 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-Drone::Drone(int _x, int _y): busy(0), cmd(), x(_x), y(_y) {
+Drone::Drone(): Drone(-1,-1) {}
+
+Drone::Drone(int _x, int _y): busy(0), command(), x(_x), y(_y) {
    // TODO Auto-generated constructor stub
 
 }

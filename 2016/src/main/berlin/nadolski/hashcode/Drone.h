@@ -1,12 +1,15 @@
 #ifndef DRONE_H_
 #define DRONE_H_
 
+#include "Command.h"
+
 namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
 class Drone {
 public:
+   Drone();
    Drone(int, int);
    virtual ~Drone();
 
