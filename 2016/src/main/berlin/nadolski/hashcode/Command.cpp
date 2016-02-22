@@ -15,8 +15,12 @@ Command::~Command() {
 }
 
 std::ostream &operator<<(std::ostream &out, const Command &cmd) {
-   out << cmd.drone << " " << (char)cmd.type << " "
-         << cmd.order << " " << cmd.product << " " << cmd.value;
+   out << cmd.drone << " " << (char)cmd.type << " ";
+   if (cmd.type == Command::LOAD || cmd.type == Command::UNLOAD)
+      out << cmd.warehouse << " " << cmd.product;
+   else if (cmd.type == Command::DELIVER)
+      out << cmd.order << " " << cmd.product;
+   out << " " << cmd.value;
 }
 
 } /* namespace hashcode */

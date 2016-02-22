@@ -17,7 +17,7 @@ install(FILES ${SOURCE_DIR}/*.h
         DESTINATION include/berlin/nadolski/hashcode
         CONFIGURATIONS Release Debug)
 
-add_library(hashcode-2016_strategies
+add_library(hashcode2016
     ${SOURCE_DIR}/Command.cpp
     ${SOURCE_DIR}/Drone.cpp
     ${SOURCE_DIR}/Order.cpp
@@ -26,15 +26,15 @@ add_library(hashcode-2016_strategies
     ${SOURCE_DIR}/Strategy.cpp
     ${SOURCE_DIR}/Warehouse.cpp)
 
-install(TARGETS hashcode-2016_strategies
+install(TARGETS hashcode2016
         ARCHIVE DESTINATION lib
         CONFIGURATIONS Release Debug)
 
-add_executable(hashcode-2016 ${SOURCE_DIR}/hashcode.cpp)
-target_link_libraries(hashcode-2016 hashcode-2016_strategies)
+add_executable(simulate ${SOURCE_DIR}/simulate.cpp)
+target_link_libraries(simulate hashcode2016)
 
-add_dependencies(hashcode-2016 hashcode-2016_strategies)
+add_dependencies(simulate hashcode2016)
 
-install(TARGETS hashcode-2016
+install(TARGETS simulate
         RUNTIME DESTINATION bin
         CONFIGURATIONS Release Debug)

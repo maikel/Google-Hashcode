@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cassert>
 #include "Problem.h"
 
 namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-std::stringstream &get_next_line(std::stringstream &line, std::istream &in) {
+static std::stringstream &get_next_line(std::stringstream &line, std::istream &in) {
    if (!in) {
       std::cerr << "Some input error occured.\n";
       std::exit(-1);
@@ -54,21 +55,19 @@ Problem::Problem(std::istream &in) {
    // read warehouse informations
    get_next_line(line, in);
    line >> N;
+   assert(line);
    warehouses.resize(N);
    for (size_t n = 0; n < N; n++) {
       get_next_line(line, in);
       line >> warehouses[n].x;
       line >> warehouses[n].y;
+      assert(line);
       warehouses[n].products.resize(products.size());
       get_next_line(line, in);
       for (size_t k = 0; k < warehouses[n].products.size(); k++) {
          line >> warehouses[n].products[k];
       }
-      if (!line) {
-         std::cerr << "Could not read warehouse informations.\n";
-         std::cerr << "Warehouse Number: " << n << std::endl;
-         exit(-1);
-      }
+      assert(line);
    }
 
    // read orders
@@ -82,15 +81,25 @@ Problem::Problem(std::istream &in) {
       get_next_line(line, in);
       int K;
       line >> K;
-      orders[n].products.resize(K);
+      orders[n].products.resize(products.size());
       get_next_line(line, in);
-      for (size_t k = 0; k < orders[n].products.size(); k++)
-         line >> orders[n].products[k];
+      for (size_t k = 0; k < K; k++) {
+         int product;
+         line >> product;
+         assert(orders[n].products.size() > product);
+         orders[n].products[product] += 1;
+      }
       if (!line) {
          std::cerr << "Could not read order informations.\n";
          std::cerr << "Order Number: " << n << std::endl;
          exit(-1);
       }
+   }
+
+   // put drones to warehouse 0
+   for (Drone &drone : drones) {
+      drone.x = warehouses[0].x;
+      drone.y = warehouses[0].y;
    }
 }
 
