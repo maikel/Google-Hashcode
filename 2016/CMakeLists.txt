@@ -39,6 +39,6 @@ add_executable(simple_strategy ${SOURCE_DIR}/simple_strategy.cpp)
 target_link_libraries(simple_strategy hashcode2016)
 add_dependencies(simple_strategy hashcode2016)
 
-install(TARGETS simulate
+install(TARGETS simulation
         RUNTIME DESTINATION bin
         CONFIGURATIONS Release Debug)
