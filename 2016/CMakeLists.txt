@@ -31,9 +31,9 @@ install(TARGETS hashcode2016
         ARCHIVE DESTINATION lib
         CONFIGURATIONS Release Debug)
 
-add_executable(simulate ${SOURCE_DIR}/simulate.cpp)
-target_link_libraries(simulate hashcode2016)
-add_dependencies(simulate hashcode2016)
+add_executable(simulation ${SOURCE_DIR}/simulation.cpp)
+target_link_libraries(simulation hashcode2016)
+add_dependencies(simulation hashcode2016)
 
 add_executable(simple_strategy ${SOURCE_DIR}/simple_strategy.cpp)
 target_link_libraries(simple_strategy hashcode2016)
