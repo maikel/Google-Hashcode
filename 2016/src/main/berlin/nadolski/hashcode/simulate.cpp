@@ -19,7 +19,7 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-int simulate_perform_commands(int t, int T, Problem &p) {
+int perform_commands(int t, int T, Problem &p) {
    int score = 0;
    // perform pending commands and increase score if neccessary
    for (int d = 0; d < p.drones.size(); d++) {
@@ -58,6 +58,7 @@ int simulate_perform_commands(int t, int T, Problem &p) {
             vector<int> &products = p.warehouses[cmd.warehouse].products;
             assert(products.size() > cmd.product);
             assert(products[cmd.product] >= cmd.value);
+            assert(p.max_load >= p.products[cmd.product]*cmd.value);
             products[cmd.product] -= cmd.value;
             // set new coordinates for drone
             drone.x = p.warehouses[cmd.warehouse].x;
@@ -90,7 +91,7 @@ float distance(int x1, int y1, int x2, int y2) {
    return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 }
 
-list<Command> simulate_assign_commands(list<Command> &commands, Problem &p) {
+list<Command> assign_commands(list<Command> &commands, Problem &p) {
    list<Command> queue = commands;
    commands = list<Command>();
    while (queue.size() > 0) {
@@ -139,8 +140,6 @@ list<Command> simulate_assign_commands(list<Command> &commands, Problem &p) {
             break;
          }
       } else {
-//         cout << "Drone " << cmd.drone << " is busy this turn.\n";
-//         cout << "Command '" << cmd << "' will be saved for later.\n";
          commands.push_back(cmd);
       }
    }
@@ -156,8 +155,8 @@ int simulate(list<Command> commands, Problem p) {
 
    for (int t = 0; t < T; t++) {
       cout << "time step t = " << t << endl;
-      commands = simulate_assign_commands(commands, p);
-      score += simulate_perform_commands(t, T, p);
+      commands = assign_commands(commands, p);
+      score += perform_commands(t, T, p);
    }
    return score;
 }

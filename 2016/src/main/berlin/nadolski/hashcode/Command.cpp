@@ -10,6 +10,18 @@ Command::Command()
 
 }
 
+Command::Command(int drone, Type t, int dest, int product, int value)
+: Command() {
+   this->drone = drone;
+   this->type  = t;
+   if (this->type == DELIVER)
+      this->order = dest;
+   else
+      this->warehouse = dest;
+   this->product = product;
+   this->value = value;
+}
+
 Command::~Command() {
    // TODO Auto-generated destructor stub
 }

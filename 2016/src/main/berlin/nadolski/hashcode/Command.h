@@ -9,16 +9,17 @@ namespace hashcode {
 
 class Command {
 public:
-   Command();
-   virtual ~Command();
-
    enum Type {
-      LOAD    = 'L',
-      UNLOAD  = 'U',
-      WAIT    = 'W',
-      DELIVER = 'D',
-      INVALID = 'I'
+         LOAD    = 'L',
+         UNLOAD  = 'U',
+         WAIT    = 'W',
+         DELIVER = 'D',
+         INVALID = 'I'
    };
+
+   Command();
+   Command(int drone, Type t, int dest, int product, int value);
+   virtual ~Command();
 
    Type type;
    int drone;

@@ -11,6 +11,7 @@ class SimpleStrategy: public Strategy {
 public:
    SimpleStrategy(const Problem &p): Strategy(p) {}
 
+   int get_warehouse_from_product(int);
    std::list<Command> generate_commands();
    std::string name() { return std::string("SimpleStrategy"); }
 };
