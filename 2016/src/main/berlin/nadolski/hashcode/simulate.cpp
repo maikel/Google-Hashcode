@@ -19,27 +19,26 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-/**
- * Validate a given command list and problem set. Essentially do the simulation
- * and check all rules every step.
- */
-bool validate(const list<Command> &commands, const Problem &problem) {
-   return true;
-}
-
 int simulate_perform_commands(int t, int T, Problem &p) {
    int score = 0;
    // perform pending commands and increase score if neccessary
-   for (Drone &drone : p.drones) {
+   for (int d = 0; d < p.drones.size(); d++) {
+      Drone &drone = p.drones[d];
       if (drone.busy == 1) {
+         cout << "Drone " << d << " performs its assinged command: "
+               << drone.command << endl;
          const Command &cmd = drone.command;
          switch (cmd.type) {
          case Command::DELIVER:
          {
+            assert(p.orders.size() > cmd.order);
             vector<int> &products = p.orders[cmd.order].products;
             assert(products.size() > cmd.product);
             products[cmd.product] -= cmd.value;
             assert(products[cmd.product] >= 0);
+            // set new coordinates for drone
+            drone.x = p.orders[cmd.order].x;
+            drone.y = p.orders[cmd.order].y;
             // check if we completed the order
             bool completed = true;
             for (int i = 0; i < products.size(); i++)
@@ -48,9 +47,8 @@ int simulate_perform_commands(int t, int T, Problem &p) {
             if (completed) {
                assert(ceil(float((T - t) * 100) / T) > 0);
                score += ceil(float((T - t) * 100) / T);
-               cout << "Drone " << cmd.drone << " dilivered "
-                    << "order " << cmd.order << " in turn " << t
-                    << " for " << score << " points!\n";
+               cout << "Completing order " << cmd.order << " and scoring "
+                     << score << " many Points.\n";
             }
             break;
          }
@@ -61,6 +59,9 @@ int simulate_perform_commands(int t, int T, Problem &p) {
             assert(products.size() > cmd.product);
             assert(products[cmd.product] >= cmd.value);
             products[cmd.product] -= cmd.value;
+            // set new coordinates for drone
+            drone.x = p.warehouses[cmd.warehouse].x;
+            drone.y = p.warehouses[cmd.warehouse].y;
             break;
          }
          case Command::UNLOAD:
@@ -69,34 +70,16 @@ int simulate_perform_commands(int t, int T, Problem &p) {
             vector<int> &products = p.warehouses[cmd.warehouse].products;
             assert(products.size() > cmd.product);
             products[cmd.product] += cmd.value;
+            // set new coordinates for drone
+            drone.x = p.warehouses[cmd.warehouse].x;
+            drone.y = p.warehouses[cmd.warehouse].y;
             break;
          }
          default:
             break;
          }
       }
-      cout << "warehouses[0] products = [";
-      for (int ip : p.warehouses[0].products)
-         cout << ip << " ";
-      cout << "]\n";
-      cout << "warehouses[1] products = [";
-      for (int ip : p.warehouses[1].products)
-         cout << ip << " ";
-      cout << "]\n";
-      cout << "order[0] products = [";
-      for (int ip : p.orders[0].products)
-         cout << ip << " ";
-      cout << "]\n";
-      cout << "order[1] products = [";
-      for (int ip : p.orders[1].products)
-         cout << ip << " ";
-      cout << "]\n";
-      cout << "order[2] products = [";
-      for (int ip : p.orders[2].products)
-         cout << ip << " ";
-      cout << "]\n";
       if (drone.busy > 0) {
-         cout << "Drone " << drone.command.drone << " waits or flies.\n";
          drone.busy -= 1;
       }
    }
@@ -107,7 +90,7 @@ float distance(int x1, int y1, int x2, int y2) {
    return sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
 }
 
-list<Command> simulate_apply_commands(list<Command> &commands, Problem &p) {
+list<Command> simulate_assign_commands(list<Command> &commands, Problem &p) {
    list<Command> queue = commands;
    commands = list<Command>();
    while (queue.size() > 0) {
@@ -115,6 +98,8 @@ list<Command> simulate_apply_commands(list<Command> &commands, Problem &p) {
       queue.pop_front();
       assert(p.drones.size() > cmd.drone);
       if (p.drones[cmd.drone].busy == 0) {
+         cout << "Drone " << cmd.drone << " recieves a new command "
+               << cmd << endl;
          assert(p.drones.size() > cmd.drone);
          Drone &drone = p.drones[cmd.drone];
          drone.command = cmd;
@@ -128,28 +113,34 @@ list<Command> simulate_apply_commands(list<Command> &commands, Problem &p) {
                p.warehouses[cmd.warehouse].x,
                p.warehouses[cmd.warehouse].y,
                drone.x, drone.y)) + 1;
-            cout << cmd.warehouse << " " << p.warehouses[cmd.warehouse].x << " " <<
-               p.warehouses[cmd.warehouse].y << " " << 
-               drone.x << " " << drone.y << endl;
-            cout << "distance " << distance(
-               p.warehouses[cmd.warehouse].x,
-               p.warehouses[cmd.warehouse].y,
-               drone.x, drone.y) << endl;
-            cout << "Drone " << cmd.drone << " is busy for " << drone.busy << " turns.\n";
+            if (drone.busy > 1) {
+               cout << "Drone " << cmd.drone << " has to fly from grid cell "
+                     << "(" << drone.x << "," << drone.y << ") to the grid cell "
+                     << "(" << p.warehouses[cmd.warehouse].x
+                     << "," << p.warehouses[cmd.warehouse].y << ") and will need "
+                     << drone.busy-1 << " turns to do so.\n";
+            }
             break;
          case Command::DELIVER:
             assert(p.orders.size() > cmd.order);
             drone.busy = ceil(distance(
                p.orders[cmd.order].x, p.orders[cmd.order].y,
                drone.x, drone.y)) + 1;
-            cout << "Drone " << cmd.drone << " is busy for " << drone.busy << " turns.\n";
+            if (drone.busy > 1) {
+               cout << "Drone " << cmd.drone << " has to fly from grid cell "
+                     << "(" << drone.x << "," << drone.y << ") to the grid cell "
+                     << "(" << p.orders[cmd.order].x
+                     << "," << p.orders[cmd.order].y << ") and will need "
+                     << drone.busy-1 << " turns to do so.\n";
+            }
             break;
          default:
             assert(0);
             break;
          }
-         // cout << "Drone " << cmd.drone << " is busy for " << drone.busy << " turns.\n";
       } else {
+//         cout << "Drone " << cmd.drone << " is busy this turn.\n";
+//         cout << "Command '" << cmd << "' will be saved for later.\n";
          commands.push_back(cmd);
       }
    }
@@ -164,9 +155,8 @@ int simulate(list<Command> commands, Problem p) {
    int T = p.deadline;
 
    for (int t = 0; t < T; t++) {
-      // cout << "time step t = " << t << endl;
-      // apply to each drone a command and remove given commands from list
-      commands = simulate_apply_commands(commands, p);
+      cout << "time step t = " << t << endl;
+      commands = simulate_assign_commands(commands, p);
       score += simulate_perform_commands(t, T, p);
    }
    return score;
