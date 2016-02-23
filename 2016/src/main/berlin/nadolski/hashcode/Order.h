@@ -16,6 +16,10 @@ public:
    int x;
    int y;
    std::vector<int> products;
+
+   bool operator==(const Order &o) const {
+      return this == &o;
+   }
 };
 
 } /* namespace hashcode */

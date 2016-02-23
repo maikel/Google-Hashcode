@@ -17,6 +17,12 @@ public:
    Command command;
    int x;
    int y;
+   int load;
+
+   bool operator==(const Drone &d) const
+   {
+      return this == &d;
+   }
 };
 
 } /* namespace hashcode */

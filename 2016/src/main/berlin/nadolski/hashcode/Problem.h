@@ -25,7 +25,7 @@ struct Problem {
    int deadline;
    int max_load;
    std::vector<Drone> drones;
-   std::vector<int> products;
+   std::vector<int> product_weights;
    std::vector<Warehouse> warehouses;
    std::vector<Order> orders;
 };

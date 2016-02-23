@@ -43,10 +43,10 @@ Problem::Problem(std::istream &in) {
    // read product informations
    get_next_line(line, in);
    line >> N;
-   products.resize(N);
+   product_weights.resize(N);
    get_next_line(line, in);
    for (size_t n = 0; n < N; n++)
-      line >> products[n];
+      line >> product_weights[n];
    if (!line) {
       std::cerr << "Could not read all product informations.\n";
       std::exit(-1);
@@ -62,7 +62,7 @@ Problem::Problem(std::istream &in) {
       line >> warehouses[n].x;
       line >> warehouses[n].y;
       assert(line);
-      warehouses[n].products.resize(products.size());
+      warehouses[n].products.resize(product_weights.size());
       get_next_line(line, in);
       for (size_t k = 0; k < warehouses[n].products.size(); k++) {
          line >> warehouses[n].products[k];
@@ -81,7 +81,7 @@ Problem::Problem(std::istream &in) {
       get_next_line(line, in);
       int K;
       line >> K;
-      orders[n].products.resize(products.size());
+      orders[n].products.resize(product_weights.size());
       get_next_line(line, in);
       for (size_t k = 0; k < K; k++) {
          int product;
@@ -115,7 +115,7 @@ void Problem::print_parameter(std::ostream &out) {
    out << "Number of Drones: " << drones.size() << std::endl;
    out << "Maximum Load Capacity of Drones: " << max_load << std::endl;
    out << "Max Steps of Simulation: " << deadline << std::endl;
-   out << "Number of Prodcuts: " << products.size() << std::endl;
+   out << "Number of Prodcuts: " << product_weights.size() << std::endl;
    out << "Number of Warehouses: " << warehouses.size() << std::endl;
    out << "Number of Orders: " << orders.size() << std::endl;
 }

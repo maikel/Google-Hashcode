@@ -14,7 +14,7 @@ namespace hashcode {
  */
 int SimpleStrategy::get_warehouse_from_product(int p)
 {
-   assert(products.size() > p);
+   assert(product_weights.size() > p);
    auto it = find_if(warehouses.begin(), warehouses.end(), [p](Warehouse w) {return w.products[p] > 0;});
    assert(it != warehouses.end());
    return std::distance(warehouses.begin(), it);

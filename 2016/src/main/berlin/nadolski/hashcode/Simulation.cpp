@@ -46,7 +46,7 @@ static void perform_load(Drone &drone, Problem &problem) // changes problem.prod
    vector<int> &products = problem.warehouses[command.warehouse].products;
    assert(products.size() > command.product);
    assert(products[command.product] >= command.value);
-   assert(problem.max_load >= problem.products[command.product] * command.value);
+   assert(problem.max_load >= problem.product_weights[command.product] * command.value);
    products[command.product] -= command.value;
    // set new coordinates for drone
    drone.x = problem.warehouses[command.warehouse].x;
