@@ -25,7 +25,8 @@ add_library(hashcode2016
     ${SOURCE_DIR}/Order.cpp
     ${SOURCE_DIR}/Problem.cpp
     ${SOURCE_DIR}/SimpleStrategy.cpp
-    ${SOURCE_DIR}/Warehouse.cpp)
+    ${SOURCE_DIR}/Warehouse.cpp
+    ${SOURCE_DIR}/NearestWarehouse.cpp)
 
 install(TARGETS hashcode2016
         ARCHIVE DESTINATION lib

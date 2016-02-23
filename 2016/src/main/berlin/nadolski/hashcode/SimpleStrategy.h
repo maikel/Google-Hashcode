@@ -16,11 +16,6 @@ public:
     */
    std::list<Command> generate_commands();
 
-   /*
-    * print global parameters defined by the input file
-    */
-   void print_parameter(std::ostream &out);
-
 private:
    /*
     * get the first best warehouse which contains a certain product.

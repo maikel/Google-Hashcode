@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include "SimpleStrategy.h"
 
 using namespace std;
@@ -13,13 +14,10 @@ namespace hashcode {
  */
 int SimpleStrategy::get_warehouse_from_product(int p)
 {
-   for (int w  = 0; w < warehouses.size(); w++) {
-      if (warehouses[w].products[p] > 0)
-         return w;
-   }
-   // this should not be reached from being a well defined problem.
-   assert(false);
-   return -1;
+   assert(products.size() > p);
+   auto it = find_if(warehouses.begin(), warehouses.end(), [p](Warehouse w) {return w.products[p] > 0;});
+   assert(it != warehouses.end());
+   return std::distance(warehouses.begin(), it);
 }
 
 /**

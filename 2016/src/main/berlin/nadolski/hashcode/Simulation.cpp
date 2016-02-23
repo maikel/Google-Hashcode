@@ -10,7 +10,7 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-static int perform_deliver(Drone &drone, int t, int T, Problem &problem)
+static int perform_deliver(Drone &drone, int t, int T, Problem &problem) // changes problem.orders and drone.x/y
 {
    assert(t < T);
    assert(drone.busy == 1);
@@ -33,13 +33,12 @@ static int perform_deliver(Drone &drone, int t, int T, Problem &problem)
    if (completed) {
       assert(ceil(float((T - t) * 100) / T) > 0);
       score += ceil(float((T - t) * 100) / T);
-      cout << "Completing order " << command.order << " and scoring " << score
-            << " Points.\n";
+      cout << "Completing order " << command.order << " and scoring " << score << " Points.\n";
    }
    return score;
 }
 
-static void perform_load(Drone &drone, Problem &problem)
+static void perform_load(Drone &drone, Problem &problem) // changes problem.products and drone.x/y
 {
    assert(drone.busy == 1);
    Command &command = drone.command;
@@ -47,15 +46,14 @@ static void perform_load(Drone &drone, Problem &problem)
    vector<int> &products = problem.warehouses[command.warehouse].products;
    assert(products.size() > command.product);
    assert(products[command.product] >= command.value);
-   assert(
-         problem.max_load >= problem.products[command.product] * command.value);
+   assert(problem.max_load >= problem.products[command.product] * command.value);
    products[command.product] -= command.value;
    // set new coordinates for drone
    drone.x = problem.warehouses[command.warehouse].x;
    drone.y = problem.warehouses[command.warehouse].y;
 }
 
-static void perform_unload(Drone &drone, Problem &problem)
+static void perform_unload(Drone &drone, Problem &problem) // changes problem.products and drone.x/y
 {
    assert(drone.busy == 1);
    Command &command = drone.command;
@@ -68,15 +66,14 @@ static void perform_unload(Drone &drone, Problem &problem)
    drone.y = problem.warehouses[command.warehouse].y;
 }
 
-static int perform_commands(int t, int T, Problem &problem)
+static int perform_commands(int t, int T, Problem &problem) // changes problem warehouse and order capacities
 {
    int score = 0;
    // perform pending commands and increase score if neccessary
    for (int d = 0; d < problem.drones.size(); d++) {
       Drone &drone = problem.drones[d];
       if (drone.busy == 1) {
-         cout << "Drone " << d << " performs its assinged command: "
-               << drone.command << endl;
+         cout << "Drone " << d << " performs its assinged command: " << drone.command << endl;
          switch (drone.command.type) {
          case Command::deliver: {
             score = perform_deliver(drone, t, T, problem);
@@ -101,40 +98,36 @@ static int perform_commands(int t, int T, Problem &problem)
    return score;
 }
 
-float distance(int x1, int y1, int x2, int y2)
+float dist(int x1, int y1, int x2, int y2)
 {
    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-static list<Command> assign_commands(list<Command> &commands, Problem &p)
+static list<Command> assign_commands(list<Command> &commands, Problem &problem) // changes problem.drones
 {
    list<Command> queue = commands;
    commands = list<Command>();
    while (queue.size() > 0) {
       Command cmd = queue.front();
       queue.pop_front();
-      assert(p.drones.size() > cmd.drone);
-      if (p.drones[cmd.drone].busy == 0) {
-         cout << "Drone " << cmd.drone << " recieves a new command " << cmd
-               << endl;
-         assert(p.drones.size() > cmd.drone);
-         Drone &drone = p.drones[cmd.drone];
+      assert(problem.drones.size() > cmd.drone);
+      if (problem.drones[cmd.drone].busy == 0) {
+         cout << "Drone " << cmd.drone << " recieves a new command " << cmd << endl;
+         assert(problem.drones.size() > cmd.drone);
+         Drone &drone = problem.drones[cmd.drone];
          drone.command = cmd;
          switch (cmd.type) {
          case Command::wait:
             drone.busy = cmd.value;
             break;
          case Command::load:
-            assert(p.warehouses.size() > cmd.warehouse);
+            assert(problem.warehouses.size() > cmd.warehouse);
             drone.busy = ceil(
-                  distance(p.warehouses[cmd.warehouse].x,
-                        p.warehouses[cmd.warehouse].y, drone.x, drone.y)) + 1;
+                  dist(problem.warehouses[cmd.warehouse].x, problem.warehouses[cmd.warehouse].y, drone.x, drone.y)) + 1;
             break;
          case Command::deliver:
-            assert(p.orders.size() > cmd.order);
-            drone.busy = ceil(
-                  distance(p.orders[cmd.order].x, p.orders[cmd.order].y,
-                        drone.x, drone.y)) + 1;
+            assert(problem.orders.size() > cmd.order);
+            drone.busy = ceil(dist(problem.orders[cmd.order].x, problem.orders[cmd.order].y, drone.x, drone.y)) + 1;
             break;
          default:
             assert(false);
