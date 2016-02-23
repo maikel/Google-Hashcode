@@ -40,6 +40,11 @@ add_executable(simple_strategy ${SOURCE_DIR}/simple_strategy.cpp)
 target_link_libraries(simple_strategy hashcode2016)
 add_dependencies(simple_strategy hashcode2016)
 
+add_executable(nearest_warehouse ${SOURCE_DIR}/nearest_warehouse.cpp)
+target_link_libraries(nearest_warehouse hashcode2016)
+add_dependencies(nearest_warehouse hashcode2016)
+
+
 install(TARGETS simulation
         RUNTIME DESTINATION bin
         CONFIGURATIONS Release Debug)

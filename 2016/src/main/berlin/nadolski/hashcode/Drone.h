@@ -1,6 +1,7 @@
 #ifndef DRONE_H_
 #define DRONE_H_
 
+#include <iostream>
 #include "Command.h"
 
 namespace berlin {
@@ -21,7 +22,7 @@ public:
 
    bool operator==(const Drone &d) const
    {
-      return this == &d;
+      return this == std::addressof(d);
    }
 };
 

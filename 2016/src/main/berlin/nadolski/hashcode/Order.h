@@ -18,7 +18,7 @@ public:
    std::vector<int> products;
 
    bool operator==(const Order &o) const {
-      return this == &o;
+      return this == std::addressof(o);
    }
 };
 

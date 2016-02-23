@@ -33,7 +33,7 @@ private:
 
    std::list<Command> fill_drone_with_products_of_order(Drone &drone, Order &order);
 
-   std::list<Drone> find_helper_drones(const Drone &drone) const;
+   std::list<Drone*> find_helper_drones(Drone &drone);
 };
 
 } /* namespace hashcode */
