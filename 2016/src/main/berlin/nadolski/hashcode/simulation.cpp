@@ -39,11 +39,11 @@ list<Command> read_commands(istream &in) {
       line >> command.drone;
       line >> type;
       command.type = (Command::Type)type;
-      if (command.type == Command::LOAD || command.type == Command::UNLOAD) 
+      if (command.type == Command::load || command.type == Command::unload) 
          line >> command.warehouse;
-      else if (command.type == Command::DELIVER)
+      else if (command.type == Command::deliver)
          line >> command.order;
-      if (command.type != Command::WAIT)
+      if (command.type != Command::wait)
          line >> command.product;
       line >> command.value;
       assert(line);

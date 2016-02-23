@@ -9,15 +9,17 @@ namespace hashcode {
 
 /**
  * return the first warehouse with an available product.
+ * the first in order of how it is stored!
  */
-int SimpleStrategy::get_warehouse_from_product(int p) {
-   vector<Warehouse> warehouses = problem.warehouses;
+int SimpleStrategy::get_warehouse_from_product(int p)
+{
    for (int w  = 0; w < warehouses.size(); w++) {
       if (warehouses[w].products[p] > 0)
          return w;
    }
    // this should not be reached from being a well defined problem.
    assert(false);
+   return -1;
 }
 
 /**
@@ -25,10 +27,9 @@ int SimpleStrategy::get_warehouse_from_product(int p) {
  * product. It is guaranteed that you can carry one entity of any product type.
  * To keep it simple transport one Product at a time.
  */
-list<Command> SimpleStrategy::generate_commands() {
+list<Command> SimpleStrategy::generate_commands()
+{
    list<Command> commands;
-   vector<Order> &orders = problem.orders;
-   vector<Drone> &drones = problem.drones;
    int d = 0;
    for (int o = 0; o < orders.size(); o++) {
       Order &order = orders[o];
@@ -39,11 +40,11 @@ list<Command> SimpleStrategy::generate_commands() {
          assert(order.products.size() > p);
          while (order.products[p] > 0) {
             int w = get_warehouse_from_product(p);
-            assert(problem.warehouses[w].products[p] > 0);
-            problem.warehouses[w].products[p] -= 1;
-            commands.push_back(Command(d, Command::LOAD, w, p, 1));
+            assert(warehouses[w].products[p] > 0);
+            warehouses[w].products[p] -= 1;
+            commands.push_back(Command(d, Command::load, w, p, 1));
             order.products[p] -= 1;
-            commands.push_back(Command(d, Command::DELIVER, o, p, 1));
+            commands.push_back(Command(d, Command::deliver, o, p, 1));
          }
       }
       d = (d + 1) % drones.size();

@@ -17,8 +17,7 @@ int main(int argc, char *argv[]) {
       cerr << "Could not open input file '" << argv[1] << "'\n";
       return -1;
    }
-   hashcode::Problem problem(input);
-   hashcode::SimpleStrategy simple(problem);
+   hashcode::SimpleStrategy simple(input);
    list<hashcode::Command> commands = simple.generate_commands();
    cout << commands.size() << endl;
    for (hashcode::Command command : commands)

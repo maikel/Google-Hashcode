@@ -10,11 +10,11 @@ namespace hashcode {
 class Command {
 public:
    enum Type {
-         LOAD    = 'L',
-         UNLOAD  = 'U',
-         WAIT    = 'W',
-         DELIVER = 'D',
-         INVALID = 'I'
+         load    = 'L',
+         unload  = 'U',
+         wait    = 'W',
+         deliver = 'D',
+         invalid = 'I'
    };
 
    Command();

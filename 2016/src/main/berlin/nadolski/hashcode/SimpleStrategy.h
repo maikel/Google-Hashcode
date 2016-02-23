@@ -7,13 +7,26 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class SimpleStrategy: public Strategy {
+class SimpleStrategy: public Problem, Strategy {
 public:
-   SimpleStrategy(const Problem &p): Strategy(p) {}
+   SimpleStrategy(std::istream &in): Problem(in) {}
 
-   int get_warehouse_from_product(int);
+   /*
+    * return an "optimized" solution
+    */
    std::list<Command> generate_commands();
-   std::string name() { return std::string("SimpleStrategy"); }
+
+   /*
+    * print global parameters defined by the input file
+    */
+   void print_parameter(std::ostream &out);
+
+private:
+   /*
+    * get the first best warehouse which contains a certain product.
+    * order is given by how it is stored.
+    */
+   int get_warehouse_from_product(int);
 };
 
 } /* namespace hashcode */

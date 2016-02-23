@@ -13,13 +13,8 @@ namespace hashcode {
 
 class Strategy {
 public:
-   Strategy(const Problem &p);
-   virtual ~Strategy();
-
+   virtual ~Strategy() { }
    virtual std::list<Command> generate_commands() = 0;
-   virtual std::string name() = 0;
-
-   Problem problem;
 };
 
 } /* namespace hashcode */

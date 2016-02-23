@@ -12,10 +12,12 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class Problem {
-public:
+struct Problem {
    Problem(std::istream &input);
    virtual ~Problem();
+
+   // print parameters for this simulation
+   void print_parameter(std::ostream &out);
 
    // given simulation properties from input file
    int rows;
@@ -26,9 +28,6 @@ public:
    std::vector<int> products;
    std::vector<Warehouse> warehouses;
    std::vector<Order> orders;
-
-   // print parameters for this simulation
-   void print_parameter(std::ostream &out);
 };
 
 } /* namespace hashcode */
