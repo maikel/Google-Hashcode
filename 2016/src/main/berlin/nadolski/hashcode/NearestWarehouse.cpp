@@ -13,18 +13,24 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-static inline float dist(const Drone &d, const Order &w)
+/**
+ * Euclidean distances
+ */
+static inline float
+dist(const Drone &d, const Order &o) noexcept
+{
+   return sqrt((d.x-o.x)*(d.x-o.x)+(d.y-o.y)*(d.y-o.y));
+}
+static inline float
+dist(const Drone &d, const Warehouse &w) noexcept
 {
    return sqrt((d.x-w.x)*(d.x-w.x)+(d.y-w.y)*(d.y-w.y));
 }
 
-static inline float dist(const Drone &d, const Warehouse &w)
+static vector<int>
+find_all_warehouses_with_product(const Drone &drone, int product, const vector<Warehouse> &warehouses)
 {
-   return sqrt((d.x-w.x)*(d.x-w.x)+(d.y-w.y)*(d.y-w.y));
-}
-
-static vector<int> find_all_warehouses_with_product(const Drone &drone, int product, const vector<Warehouse> &warehouses)
-{
+   assert(warehouses.size() > 0);
    vector<int> found_product;
    for (auto warehouse = warehouses.begin(); warehouse != warehouses.end(); warehouse++) {
       assert(warehouse->products.size() > product);
@@ -36,8 +42,8 @@ static vector<int> find_all_warehouses_with_product(const Drone &drone, int prod
 
 int NearestWarehouse::get_nearest_warehouse(const Drone &drone) const
 {
+   assert(warehouses.size() > 0);
    auto nearest = warehouses.begin();
-   assert(nearest != warehouses.end());
    for (auto warehouse = nearest + 1; warehouse != warehouses.end(); warehouse++)
       if (dist(drone, *warehouse) < dist(drone, *nearest))
          nearest = warehouse;
@@ -115,12 +121,12 @@ list<Command> NearestWarehouse::fill_drone_with_products_of_order(Drone &drone, 
    return commands;
 }
 
-list<Drone*> NearestWarehouse::find_helper_drones(Drone &drone)
+list<Drone> NearestWarehouse::find_helper_drones(Drone &drone)
 {
-   list<Drone*> helpers;
-   for (Drone &d : drones)
+   list<Drone> helpers;
+   for (const Drone &d : drones)
       if (d.x == drone.x && d.y == drone.y)
-         helpers.push_back(&d);
+         helpers.push_back(d);
    return helpers;
 }
 
@@ -171,20 +177,22 @@ int NearestWarehouse::cost(const Drone &drone, const Order &order) const
    vector<int> order_products(order.products);
    int cost = 0;
    for (auto product = order_products.begin(); product != order_products.end(); product++) {
-      int ip = distance(order_products.begin(), product);
-      vector<int> candidates = find_all_warehouses_with_product(drone, ip, local_warehouses);
-      sort(candidates.begin(), candidates.end(), [&local_warehouses, &drone](int w, int v){
-         return dist(drone, local_warehouses[w]) < dist(drone, local_warehouses[v]);
-      });
-      for (auto nearest = candidates.begin(); nearest != candidates.end() && *product > 0; nearest++) {
-         if (*product > local_warehouses[*nearest].products[ip]) {
-            *product -= local_warehouses[*nearest].products[ip];
-            local_warehouses[*nearest].products[ip] = 0;
-         } else {
-            local_warehouses[*nearest].products[ip] -= *product;
-            *product = 0;
+      if (*product > 0) {
+         int ip = distance(order_products.begin(), product);
+         vector<int> whcandidates = find_all_warehouses_with_product(drone, ip, local_warehouses);
+         sort(whcandidates.begin(), whcandidates.end(), [&local_warehouses, &drone](int w, int v){
+            return dist(drone, local_warehouses[w]) < dist(drone, local_warehouses[v]);
+         });
+         for (auto warehouse = whcandidates.begin(); warehouse != whcandidates.end() && *product > 0; warehouse++) {
+            if (*product > local_warehouses[*warehouse].products[ip]) {
+               *product -= local_warehouses[*warehouse].products[ip];
+               local_warehouses[*warehouse].products[ip] = 0;
+            } else {
+               local_warehouses[*warehouse].products[ip] -= *product;
+               *product = 0;
+            }
+            cost += ceil(dist(drone, local_warehouses[*warehouse]));
          }
-         cost += ceil(dist(drone, local_warehouses[*nearest]));
       }
    }
    return cost;

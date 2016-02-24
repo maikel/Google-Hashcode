@@ -1,0 +1,3 @@
+[submodule "2016/lib/GSL"]
+	path = 2016/lib/GSL
+	url = git@github.com:Microsoft/GSL

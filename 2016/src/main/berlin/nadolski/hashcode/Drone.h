@@ -8,21 +8,17 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class Drone {
-public:
-   Drone();
-   Drone(int, int);
-   virtual ~Drone();
-
+struct Drone {
    int busy;
    Command command;
    int x;
    int y;
    int load;
+   int id;
 
    bool operator==(const Drone &d) const
    {
-      return this == std::addressof(d);
+      return id == d.id;
    }
 };
 

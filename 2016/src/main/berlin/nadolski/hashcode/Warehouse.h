@@ -7,12 +7,8 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-
-class Warehouse {
-public:
-   Warehouse();
-   virtual ~Warehouse();
-
+struct Warehouse {
+   int id;
    int x;
    int y;
    std::vector<int> products;

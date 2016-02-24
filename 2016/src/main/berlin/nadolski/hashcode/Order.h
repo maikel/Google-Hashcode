@@ -1,24 +1,21 @@
 #ifndef ORDER_H_
 #define ORDER_H_
 
-#include <array>
 #include <vector>
 
 namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class Order {
-public:
-   Order();
-   virtual ~Order();
-
+struct Order {
+   int id;
    int x;
    int y;
    std::vector<int> products;
 
-   bool operator==(const Order &o) const {
-      return this == std::addressof(o);
+   bool operator==(Order &other)
+   {
+      return id == other.id;
    }
 };
 

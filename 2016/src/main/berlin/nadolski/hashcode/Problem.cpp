@@ -58,6 +58,7 @@ Problem::Problem(std::istream &in) {
    assert(line);
    warehouses.resize(N);
    for (size_t n = 0; n < N; n++) {
+      warehouses[n].id = n;
       get_next_line(line, in);
       line >> warehouses[n].x;
       line >> warehouses[n].y;
@@ -75,6 +76,7 @@ Problem::Problem(std::istream &in) {
    line >> N;
    orders.resize(N);
    for (size_t n = 0; n < N; n++) {
+      orders[n].id = n;
       get_next_line(line, in);
       line >> orders[n].x;
       line >> orders[n].y;
@@ -97,9 +99,10 @@ Problem::Problem(std::istream &in) {
    }
 
    // put drones to warehouse 0
-   for (Drone &drone : drones) {
-      drone.x = warehouses[0].x;
-      drone.y = warehouses[0].y;
+   for (int id = 0; id < drones.size(); id++) {
+      drones[id].id = id;
+      drones[id].x = warehouses[0].x;
+      drones[id].y = warehouses[0].y;
    }
 }
 
