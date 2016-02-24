@@ -165,6 +165,12 @@ list<Drone*> NearestWarehouse::find_helper_drones(Drone &drone)
    return helpers;
 }
 
+static inline bool products_left_to_deliver(const Order &order)
+{
+   return find_if(order.products.begin(), order.products.end(),
+            [](int product){return product > 0;}) != order.products.end();
+}
+
 list<Command> NearestWarehouse::generate_commands()
 {
    list<Command> commands;
@@ -174,10 +180,9 @@ list<Command> NearestWarehouse::generate_commands()
 
    while (orders.size() > 0) {
       // get the next free drone
-      auto drone = drones.begin();
-      for (auto d = drones.begin(); d != drones.end(); d++)
-         if (d->busy < drone->busy)
-            drone = d;
+      auto drone = min_element(drones.begin(), drones.end(), [](const Drone &d1, const Drone &d2) {
+         return d1.busy < d2.busy;
+      });
 
       // sort orders by cost
       auto compare_orders_by_drone_costT =
@@ -189,8 +194,7 @@ list<Command> NearestWarehouse::generate_commands()
       // while the active order has products to be delivered tell every helper drone
       // to load and deliver as much as they can
       auto helper = helper_drones.begin();
-      while (find_if(best_order->products.begin(),best_order->products.end(),
-            [](int product){return product > 0;}) != best_order->products.end()) {
+      while (products_left_to_deliver(*best_order)) {
          list<Command> commands_product = fill_drone_with_products_of_order(**helper, *best_order);
          commands.splice(commands.end(), commands_product);
          helper++;

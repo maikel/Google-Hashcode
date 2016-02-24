@@ -33,7 +33,7 @@ private:
    int get_nearest_warehouse(const Drone &drone) const;
 
    /*
-    * returns a weight for an order depending on avaiable resources and
+    * returns a cost for an order depending on avaiable resources and
     * distances to the warehouses
     */
    int cost(const Drone &drone, const Order &order) const;
