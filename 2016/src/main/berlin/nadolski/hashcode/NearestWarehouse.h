@@ -21,10 +21,10 @@ public:
    std::list<Command> generate_commands();
 
 private:
-   std::list<Command> create_load_commands_for_product(Drone &drone, const Order &order, int product);
+   std::list<Command> create_load_commands_for_product(Drone &drone, Order &order, int product);
    std::list<Command> create_deliver_commands_from_load_commands(
          Drone &drone, Order &order, const std::list<Command> &load_commands);
-   void push_back_load_command(std::list<Command> &commands, const Command &command);
+   void push_back_load_command(std::list<Command> &commands, const Command &command, Order &order);
    void push_back_deliver_command(std::list<Command> &commands, const Command &command);
    /*
     * get the first best warehouse which contains a certain product.

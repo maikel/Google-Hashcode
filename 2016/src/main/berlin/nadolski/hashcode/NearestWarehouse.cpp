@@ -47,16 +47,6 @@ NearestWarehouse::~NearestWarehouse()
 {
 }
 
-template <class T>
-size_t find_index(const vector<T> &vs, const T &value)
-{
-   int i = 0;
-   for (i = 0; i < vs.size(); i++)
-      if (vs[i] == value)
-         return i;
-   return i;
-}
-
 template <class compareT>
 std::set<int, compareT>
 NearestWarehouse::find_product_indices_from_order(const Order &order, compareT compare) const
@@ -69,14 +59,17 @@ NearestWarehouse::find_product_indices_from_order(const Order &order, compareT c
 }
 
 void NearestWarehouse::push_back_load_command(
-      list<Command> &commands, const Command &command)
+      list<Command> &commands, const Command &command, Order &order)
 {
    assert(command.type == Command::load);
    assert(warehouses[command.warehouse].products[command.product] >= command.value);
    assert(drones[command.drone].load+product_weights[command.product]*command.value <= max_load);
+   assert(order.products.size() > command.product);
+   order.products[command.product] -= command.value;
+   assert(order.products[command.product] >= 0);
    warehouses[command.warehouse].products[command.product] -= command.value;
    drones[command.drone].load += product_weights[command.product]*command.value;
-   assert(drones[command.drone].load < max_load);
+   assert(drones[command.drone].load <= max_load);
    drones[command.drone].busy += ceil(dist(drones[command.drone], warehouses[command.warehouse]))+1;
    drones[command.drone].x = warehouses[command.warehouse].x;
    drones[command.drone].y = warehouses[command.warehouse].y;
@@ -96,7 +89,7 @@ void NearestWarehouse::push_back_deliver_command(
    commands.push_back(command);
 }
 
-list<Command> NearestWarehouse::create_load_commands_for_product(Drone &drone, const Order &order, int product)
+list<Command> NearestWarehouse::create_load_commands_for_product(Drone &drone, Order &order, int product)
 {
    list<Command> commands;
    list<Warehouse*> warehouses_with_product = find_all_warehouses_with_product(drone, product, warehouses);
@@ -112,15 +105,15 @@ list<Command> NearestWarehouse::create_load_commands_for_product(Drone &drone, c
       int num_product_from_warehouse = min(order.products[product], warehouse->products[product]);
       if (max_load >= drone.load + num_product_from_warehouse*product_weights[product]) {
          push_back_load_command(commands,
-               Command(drone.id, Command::load, warehouse->id, product, num_product_from_warehouse));
+               Command(drone.id, Command::load, warehouse->id, product, num_product_from_warehouse), order);
       } else {
          num_product_from_warehouse = (max_load-drone.load)/product_weights[product];
          assert(num_product_from_warehouse > 0);
          assert(max_load >= drone.load + num_product_from_warehouse*product_weights[product]);
          push_back_load_command(commands,
-               Command(drone.id, Command::load, warehouse->id, product, num_product_from_warehouse));
+               Command(drone.id, Command::load, warehouse->id, product, num_product_from_warehouse), order);
       }
-      if (max_load < drone.load+product_weights[product])
+      if (max_load < drone.load+product_weights[product] || order.products[product] == 0)
          break;
    }
    assert(commands.size() > 0);
@@ -134,8 +127,6 @@ list<Command> NearestWarehouse::create_deliver_commands_from_load_commands(
    for (Command load : load_commands) {
       push_back_deliver_command(deliver_commands,
             Command(drone.id, Command::deliver, order.id, load.product, load.value));
-      order.products[load.product] -= load.value;
-      assert(order.products[load.product] >= 0);
    }
    return deliver_commands;
 }
@@ -177,7 +168,9 @@ list<Drone*> NearestWarehouse::find_helper_drones(Drone &drone)
 list<Command> NearestWarehouse::generate_commands()
 {
    list<Command> commands;
-   vector<Order> orders(this->orders);
+   list<Order> orders;
+   copy(this->orders.begin(), this->orders.end(), back_inserter(orders));
+   int count = 1;
 
    while (orders.size() > 0) {
       // get the next free drone
@@ -189,30 +182,32 @@ list<Command> NearestWarehouse::generate_commands()
       // sort orders by cost
       auto compare_orders_by_drone_costT =
             [this,&drone](const Order &o1, const Order &o2) { return cost(*drone, o1) > cost(*drone, o2); };
-      sort(orders.begin(), orders.end(), compare_orders_by_drone_costT);
-      Order &best_order = orders.back();
-      cerr << "Generating commands for order " << best_order.id << endl;
+      auto best_order = min_element(orders.begin(), orders.end(), compare_orders_by_drone_costT);
+      cerr << "Generating commands for order " << best_order->id << " (" << float(count++)/this->orders.size()*100 << "%)\n";
       // find possible helping drones
       list<Drone*> helper_drones = find_helper_drones(*drone);
       // while the active order has products to be delivered tell every helper drone
       // to load and deliver as much as they can
       auto helper = helper_drones.begin();
-      while (find_if(best_order.products.begin(),best_order.products.end(),
-            [](int product){return product > 0;}) != best_order.products.end()) {
-         list<Command> commands_product = fill_drone_with_products_of_order(**helper, best_order);
+      while (find_if(best_order->products.begin(),best_order->products.end(),
+            [](int product){return product > 0;}) != best_order->products.end()) {
+         list<Command> commands_product = fill_drone_with_products_of_order(**helper, *best_order);
          commands.splice(commands.end(), commands_product);
          helper++;
          if (helper == helper_drones.end())
             helper = helper_drones.begin();
       }
-      orders.pop_back();
+      orders.erase(best_order);
    }
    return commands;
 }
 
+/**
+ * This cost functions determines how long it takes in total number of turns
+ * to complete a given order.
+ */
 int NearestWarehouse::cost(const Drone &drone, const Order &order) const
 {
-   // for each product get index of nearest warehouse
    vector<Warehouse> local_warehouses(warehouses);
    vector<int> order_products(order.products);
    int cost = 0;

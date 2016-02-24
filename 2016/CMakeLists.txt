@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 project(hashcode-2016)
 
-SET(CMAKE_BUILD_TYPE Assert)
+SET(CMAKE_BUILD_TYPE Asserts)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
