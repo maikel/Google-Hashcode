@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
       return -1;
    }
    hashcode::NearestWarehouse nearest(input);
-   // nearest.print_parameter(cout);
+//    nearest.print_parameter(cout);
    list<hashcode::Command> commands = nearest.generate_commands();
    cout << commands.size() << endl;
    for (hashcode::Command command : commands)
