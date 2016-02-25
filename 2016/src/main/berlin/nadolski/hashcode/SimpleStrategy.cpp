@@ -1,6 +1,8 @@
 #include <cassert>
 #include <algorithm>
+
 #include "SimpleStrategy.h"
+#include "ProblemState.h"
 
 using namespace std;
 

@@ -18,15 +18,15 @@ public:
    };
 
    Command();
-   Command(int drone, Type t, int dest, int product, int value);
+   Command(std::size_t drone, Type t, std::size_t dest, std::size_t product, std::size_t value);
    virtual ~Command();
 
    Type type;
-   int drone;
-   int order;
-   int warehouse;
-   int product;
-   int value;
+   std::size_t drone;
+   std::size_t order;
+   std::size_t warehouse;
+   std::size_t product;
+   std::size_t value;
 };
 
 std::ostream &operator<<(std::ostream &out, const Command &cmd);

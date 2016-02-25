@@ -21,8 +21,9 @@ install(FILES ${SOURCE_DIR}/*.h
 
 add_library(hashcode2016
     ${SOURCE_DIR}/Command.cpp
-    ${SOURCE_DIR}/Problem.cpp
+    ${SOURCE_DIR}/ProblemState.cpp
     ${SOURCE_DIR}/SimpleStrategy.cpp
+    ${SOURCE_DIR}/MyStrategy.cpp
     ${SOURCE_DIR}/NearestWarehouse.cpp)
 
 install(TARGETS hashcode2016
@@ -36,6 +37,10 @@ add_dependencies(simulation hashcode2016)
 add_executable(simple_strategy ${SOURCE_DIR}/simple_strategy.cpp)
 target_link_libraries(simple_strategy hashcode2016)
 add_dependencies(simple_strategy hashcode2016)
+
+add_executable(my_strategy ${SOURCE_DIR}/my_strategy.cpp)
+target_link_libraries(my_strategy hashcode2016)
+add_dependencies(my_strategy hashcode2016)
 
 add_executable(nearest_warehouse ${SOURCE_DIR}/nearest_warehouse.cpp)
 target_link_libraries(nearest_warehouse hashcode2016)

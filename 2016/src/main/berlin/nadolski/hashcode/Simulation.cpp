@@ -10,7 +10,7 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-static int perform_deliver(Drone &drone, int t, int T, Problem &problem) // changes problem.orders and drone.x/y
+static int perform_deliver(Drone &drone, int t, int T, ProblemState &problem) // changes problem.orders and drone.x/y
 {
    assert(t < T);
    assert(drone.busy == 1);
@@ -38,7 +38,7 @@ static int perform_deliver(Drone &drone, int t, int T, Problem &problem) // chan
    return score;
 }
 
-static void perform_load(Drone &drone, Problem &problem) // changes problem.products and drone.x/y
+static void perform_load(Drone &drone, ProblemState &problem) // changes problem.products and drone.x/y
 {
    assert(drone.busy == 1);
    Command &command = drone.command;
@@ -53,7 +53,7 @@ static void perform_load(Drone &drone, Problem &problem) // changes problem.prod
    drone.y = problem.warehouses[command.warehouse].y;
 }
 
-static void perform_unload(Drone &drone, Problem &problem) // changes problem.products and drone.x/y
+static void perform_unload(Drone &drone, ProblemState &problem) // changes problem.products and drone.x/y
 {
    assert(drone.busy == 1);
    Command &command = drone.command;
@@ -66,7 +66,7 @@ static void perform_unload(Drone &drone, Problem &problem) // changes problem.pr
    drone.y = problem.warehouses[command.warehouse].y;
 }
 
-static int perform_commands(int t, int T, Problem &problem) // changes problem warehouse and order capacities
+static int perform_commands(int t, int T, ProblemState &problem) // changes problem warehouse and order capacities
 {
    int score = 0;
    // perform pending commands and increase score if neccessary
@@ -103,7 +103,7 @@ float dist(int x1, int y1, int x2, int y2)
    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-static list<Command> assign_commands(list<Command> &commands, Problem &problem) // changes problem.drones
+static list<Command> assign_commands(list<Command> &commands, ProblemState &problem) // changes problem.drones
 {
    list<Command> queue = commands;
    commands = list<Command>();
@@ -151,7 +151,7 @@ int Simulation::run(list<Command> commands)
    int score = 0;
    int T = problem.deadline;
 
-   Problem problem_of_this_run(problem);
+   ProblemState problem_of_this_run(problem);
    for (int t = 0; t < T; t++) {
       cout << "time step t = " << t << endl;
       commands = assign_commands(commands, problem_of_this_run);

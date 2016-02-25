@@ -1,15 +1,16 @@
 #ifndef SIMPLESTRATEGY_H_
 #define SIMPLESTRATEGY_H_
 
+#include "ProblemState.h"
 #include "Strategy.h"
 
 namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class SimpleStrategy: public Problem, Strategy {
+class SimpleStrategy: public ProblemState, Strategy {
 public:
-   SimpleStrategy(std::istream &in): Problem(in) {}
+   SimpleStrategy(std::istream &in): ProblemState(in) {}
 
    /*
     * return an "optimized" solution

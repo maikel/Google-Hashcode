@@ -39,7 +39,7 @@ find_all_warehouses_with_product(const Drone &drone, int product, vector<Warehou
    return warehouses_with_product;
 }
 
-NearestWarehouse::NearestWarehouse(std::istream &in): Problem(in)
+NearestWarehouse::NearestWarehouse(std::istream &in): ProblemState(in)
 {
 }
 
@@ -146,6 +146,14 @@ list<Command> NearestWarehouse::fill_drone_with_products_of_order(Drone &drone, 
    while (product != product_indices_sorted.end() && drone.load+product_weights[*product] < max_load) {
       assert(order.products.size() > *product);
       assert(order.products[*product] > 0);
+      auto compare_warehouses_with_product_distT = [&drone, &product](Warehouse &w, Warehouse &v) {
+         float dw, dv;
+         dw = w.products[*product] == 0 ? numeric_limits<float>::infinity() : dist(drone, w);
+         dv = v.products[*product] == 0 ? numeric_limits<float>::infinity() : dist(drone, v);
+         return dw < dv;
+      };
+      auto nearest_warehouse_with_product = min_element(warehouses.begin(), warehouses.end(),
+         compare_warehouses_with_product_distT);
       list<Command> tmp_load_commands = create_load_commands_for_product(drone, order, *product);
       load_commands.splice(load_commands.end(), tmp_load_commands);
       product++;
@@ -222,7 +230,6 @@ int NearestWarehouse::cost(const Drone &drone, const Order &order) const
          whcandidates.sort([&drone](Warehouse *w, Warehouse *v){
             return dist(drone, *w) < dist(drone, *v);
          });
-         auto test = whcandidates.begin();
          for (auto warehouse = whcandidates.begin(); warehouse != whcandidates.end() && *product > 0; warehouse++) {
             if (*product > (*warehouse)->products[ip]) {
                *product -= (*warehouse)->products[ip];

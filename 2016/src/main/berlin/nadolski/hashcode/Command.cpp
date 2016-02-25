@@ -10,7 +10,7 @@ Command::Command()
 
 }
 
-Command::Command(int drone, Type t, int dest, int product, int value)
+Command::Command(size_t drone, Type t, size_t dest, size_t product, size_t value)
 : Command() {
    this->drone = drone;
    this->type  = t;

@@ -1,11 +1,9 @@
 #ifndef STRATEGY_H_
 #define STRATEGY_H_
 
-#include "Problem.h"
 #include "Command.h"
 
 #include <list>
-#include <string>
 
 namespace berlin {
 namespace nadolski {

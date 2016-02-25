@@ -12,9 +12,9 @@ namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-struct Problem {
-   Problem(std::istream &input);
-   virtual ~Problem();
+struct ProblemState {
+   ProblemState(std::istream &input);
+   virtual ~ProblemState();
 
    // print parameters for this simulation
    void print_parameter(std::ostream &out);

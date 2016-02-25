@@ -2,7 +2,7 @@
 #include <fstream>
 #include <list>
 #include "NearestWarehouse.h"
-#include "Problem.h"
+#include "ProblemState.h"
 
 using namespace std;
 using namespace berlin::nadolski;

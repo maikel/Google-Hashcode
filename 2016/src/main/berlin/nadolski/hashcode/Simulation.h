@@ -4,7 +4,7 @@
 #include <istream>
 #include <list>
 #include "Command.h"
-#include "Problem.h"
+#include "ProblemState.h"
 
 namespace berlin {
 namespace nadolski {
@@ -15,7 +15,7 @@ public:
    Simulation(std::istream &in);
    virtual int run(std::list<Command> commands);
    virtual ~Simulation();
-   Problem problem;
+   ProblemState problem;
 };
 
 } /* namespace hashcode */

@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include <cassert>
-#include "Problem.h"
+#include "ProblemState.h"
 
 namespace berlin {
 namespace nadolski {
@@ -23,7 +23,7 @@ static std::stringstream &get_next_line(std::stringstream &line, std::istream &i
 /**
  * Read input file which is defined in the Hashcode problem set.
  */
-Problem::Problem(std::istream &in) {
+ProblemState::ProblemState(std::istream &in) {
    size_t N;
    std::stringstream line;
 
@@ -106,14 +106,14 @@ Problem::Problem(std::istream &in) {
    }
 }
 
-Problem::~Problem() {
+ProblemState::~ProblemState() {
    // TODO Auto-generated destructor stub
 }
 
 /**
  * Print parameters for general information.
  */
-void Problem::print_parameter(std::ostream &out) {
+void ProblemState::print_parameter(std::ostream &out) {
    out << "Map Dimension: (" << rows << ", " << cols << ")\n";
    out << "Number of Drones: " << drones.size() << std::endl;
    out << "Maximum Load Capacity of Drones: " << max_load << std::endl;

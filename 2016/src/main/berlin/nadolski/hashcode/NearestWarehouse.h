@@ -3,14 +3,14 @@
 
 #include <set>
 
-#include "Problem.h"
+#include "ProblemState.h"
 #include "Strategy.h"
 
 namespace berlin {
 namespace nadolski {
 namespace hashcode {
 
-class NearestWarehouse: public Problem, public Strategy {
+class NearestWarehouse: public ProblemState, public Strategy {
 public:
    NearestWarehouse(std::istream &in);
    virtual ~NearestWarehouse();
