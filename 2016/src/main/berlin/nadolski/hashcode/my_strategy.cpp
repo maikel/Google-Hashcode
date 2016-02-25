@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
    }
    hashcode::MyStrategy strat(input);
    vector<hashcode::Command> commands = strat.generate_commands();
+   cout << commands.size() << endl;
    for (auto command : commands)
       cout << command << "\n";
    cout << flush;
