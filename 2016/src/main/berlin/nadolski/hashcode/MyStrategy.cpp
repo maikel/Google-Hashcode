@@ -28,7 +28,6 @@ bool load_deliver_zero_sum(const std::vector<Command> &commands);
 std::vector<Command> create_commands(Drone &drone, Order &order, ProblemState &state);
 
 template <typename A, typename B>
-   // requires Vector2<A>, Vector2<B>
 float dist(const A &a, const B &b)
 {
    return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
